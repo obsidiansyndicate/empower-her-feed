@@ -1,0 +1,237 @@
+<html>
+        <head><title>Downloaded HTML</title></head>
+        <body>
+            <pre style="white-space: pre-wrap; word-wrap: break-word;"><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Personalized Safety Feed</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0; padding: 0;
+    background: #f7f9fc;
+    color: #333;
+  }
+  header {
+    background: #0077cc;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+  }
+  main {
+    max-width: 600px;
+    margin: 1rem auto;
+    padding: 0 1rem;
+  }
+  .interest-form {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 0 6px #ccc;
+  }
+  .interest-form h2 {
+    margin-top: 0;
+  }
+  .interest-form label {
+    display: block;
+    margin: 0.5rem 0;
+  }
+  button {
+    background: #0077cc;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #005fa3;
+  }
+  .feed {
+    margin-top: 1rem;
+  }
+  .card {
+    background: white;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 0 6px #ccc;
+  }
+  .card h3 {
+    margin: 0 0 0.5rem 0;
+  }
+  .card .type {
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #0077cc;
+    margin-bottom: 0.5rem;
+  }
+  .change-btn {
+    display: inline-block;
+    margin-top: 1rem;
+    background: #555;
+  }
+  @media (max-width: 480px) {
+    main {
+      margin: 0.5rem;
+      padding: 0.5rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Personalized Safety Feed</h1>
+</header>
+
+<main>
+  <section id="interest-section" class="interest-form">
+    <h2>Select Your Interests</h2>
+    <form id="interestForm">
+      <label><input type="checkbox" name="interest" value="self-defense" /> Self-Defense</label>
+      <label><input type="checkbox" name="interest" value="mental-health" /> Mental Health</label>
+      <label><input type="checkbox" name="interest" value="digital-safety" /> Digital Safety</label>
+      <label><input type="checkbox" name="interest" value="legal-aid" /> Legal Aid</label>
+      <button type="submit">Show My Feed</button>
+    </form>
+  </section>
+
+  <section id="feed-section" style="display:none;">
+    <h2>Your Personalized Feed</h2>
+    <div id="feed" class="feed"></div>
+    <button id="changeInterests" class="change-btn">Change Interests</button>
+  </section>
+</main>
+
+<script>
+  const contentItems = [
+    {
+      id: 1,
+      title: "5 Self-Defense Moves Every Woman Should Know",
+      category: "self-defense",
+      type: "article",
+      link: "#",
+    },
+    {
+      id: 2,
+      title: "Mental Health Tips for Stressful Days",
+      category: "mental-health",
+      type: "video",
+      link: "#",
+    },
+    {
+      id: 3,
+      title: "Protect Your Privacy Online: A Beginner’s Guide",
+      category: "digital-safety",
+      type: "article",
+      link: "#",
+    },
+    {
+      id: 4,
+      title: "How to Report Harassment Legally",
+      category: "legal-aid",
+      type: "article",
+      link: "#",
+    },
+    {
+      id: 5,
+      title: "Understanding Consent and Boundaries",
+      category: "self-defense",
+      type: "video",
+      link: "#",
+    },
+    {
+      id: 6,
+      title: "Recognizing Phishing Scams Online",
+      category: "digital-safety",
+      type: "quiz",
+      link: "#",
+    },
+  ];
+
+  const interestForm = document.getElementById('interestForm');
+  const interestSection = document.getElementById('interest-section');
+  const feedSection = document.getElementById('feed-section');
+  const feedDiv = document.getElementById('feed');
+  const changeBtn = document.getElementById('changeInterests');
+
+  // Load saved interests on page load
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedInterests = JSON.parse(localStorage.getItem('userInterests'));
+    if (savedInterests && savedInterests.length > 0) {
+      // Set checkboxes based on saved interests
+      Array.from(interestForm.elements['interest']).forEach(checkbox => {
+        checkbox.checked = savedInterests.includes(checkbox.value);
+      });
+      showFeed(savedInterests);
+      interestSection.style.display = 'none';
+      feedSection.style.display = 'block';
+    }
+  });
+
+  // Form submission handler
+  interestForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const selectedInterests = Array.from(
+      interestForm.elements['interest']
+    ).filter(checkbox => checkbox.checked).map(cb => cb.value);
+
+    if (selectedInterests.length === 0) {
+      alert('Please select at least one interest.');
+      return;
+    }
+
+    // Save interests to localStorage
+    localStorage.setItem('userInterests', JSON.stringify(selectedInterests));
+
+    showFeed(selectedInterests);
+  });
+
+  // Change interests button handler
+  changeBtn.addEventListener('click', () => {
+    feedSection.style.display = 'none';
+    interestSection.style.display = 'block';
+    feedDiv.innerHTML = '';
+
+    // Clear saved interests from localStorage
+    localStorage.removeItem('userInterests');
+
+    // Reset form checkboxes
+    interestForm.reset();
+  });
+
+  function showFeed(interests) {
+    // Filter content based on interests
+    const filtered = contentItems.filter(item => interests.includes(item.category));
+
+    // Clear previous feed
+    feedDiv.innerHTML = '';
+
+    if (filtered.length === 0) {
+      feedDiv.innerHTML = '<p>No content available for your interests.</p>';
+    } else {
+      filtered.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="type">${item.type}</div>
+          <h3><a href="${item.link}" target="_blank">${item.title}</a></h3>
+        `;
+        feedDiv.appendChild(card);
+      });
+    }
+
+    interestSection.style.display = 'none';
+    feedSection.style.display = 'block';
+  }
+</script>
+
+</body>
+</html></pre>
+        </body>
+    </html>
